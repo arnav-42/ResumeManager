@@ -8,8 +8,16 @@ from tkinter import filedialog, messagebox
 #config
 APP_DIR = os.path.join(os.path.expanduser("~"), ".resume_app_storage")
 INDEX_FILE = os.path.join(APP_DIR, "index.json")
-DOWNLOADS_DIR = os.path.join(os.path.expanduser("~"), "Downloads")
-TARGET_NAME = "arnav_kalekar_resume.pdf"
+
+CONFIG_FILE = "config.json"
+
+with open(CONFIG_FILE, "r") as f:
+    CONFIG = json.load(f)
+
+# Apply config values
+TARGET_NAME = CONFIG["target_name"] + CONFIG["file_extension"]
+DOWNLOADS_DIR = os.path.expanduser(CONFIG["download_folder"])
+
 
 os.makedirs(APP_DIR, exist_ok=True)
 if not os.path.exists(INDEX_FILE):
@@ -75,13 +83,14 @@ root.title("Resume Manager")
 frame = tk.Frame(root, padx=10, pady=10)
 frame.pack(fill=tk.BOTH, expand=True)
 
-btn_upload = tk.Button(frame, text="Upload PDF(s)", command=upload_pdfs)
+EXT = CONFIG["file_extension"].lstrip(".")  # e.g. "pdf"
+btn_upload = tk.Button(frame, text=f"Upload {EXT.upper()} file(s)", command=upload_pdfs)
 btn_upload.pack(fill=tk.X, pady=(0,10))
 
 listbox = tk.Listbox(frame, height=10)
 listbox.pack(fill=tk.BOTH, expand=True)
 
-btn_download = tk.Button(frame, text="Download as arnav_kalekar_resume.pdf", command=download_selected)
+btn_download = tk.Button(frame, text=f"Download as {TARGET_NAME}", command=download_selected)
 btn_download.pack(fill=tk.X, pady=(10,0))
 
 refresh_list()
